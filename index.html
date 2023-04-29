@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <title>App de reconhecimento de Gestos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Boostrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+    <!-- Estilo customizado -->
+    <link rel="stylesheet" href="./assets/styles/index.css" />
+    <!-- FA Icons -->
+    <script src="https://kit.fontawesome.com/c27ffa2f00.js" crossorigin="anonymous"></script>
+    <!-- ml5 -->
+    <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+    <!-- Defer, o script será executado após pagina HTML tiver sido toda analisada
+    mas o download é feito no background assincronamente-->
+    <script defer src="./assets/scripts/index.js"></script>
+    <!-- Importando o jogo para ser controlado -->
+    <script defer src="./assets/scripts/snake.js"></script>
+    <!-- CSS do jogo -->
+    <link rel="stylesheet" href="./assets/styles/snake.css" />
+</head>
+
+<body>
+    <div class="container-fluid">
+        <!-- Area com header do site -->
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-5 text-center">
+                <img src="./assets/images/neural-network.png" alt="Gesture Icon" width="85px" class="img-fluid" />
+                <h1 id="app-title" class="fs-4 fw-bold">Recognition App</h1>
+            </div>
+        </div>
+        <!-- Rows com duas cols, uma para exibição do video e outra para painel de treinamento -->
+        <div class="row justify-content-center mt-2">
+            <!-- Area com video -->
+            <div class="col-md-4 text-center mt-2" id="videoArea">
+                <video autoplay="true" id="webcam" class="hide rounded"></video>
+            </div>
+            <!-- Area com o jogo-->
+            <div class="col-md-5 text-center mt-2 hide" id="gameArea">
+                <div class="mt-4">
+                    <canvas id="canvasSnakeGame"></canvas>
+                </div>
+                <button class="btn btn-outline-dark mt-2 mb-2 me-1 fw-bold" id="btRestartGame" type="button">
+                    Reiniciar
+                </button>
+            </div>
+            <div class="col-md-4 col-sm-9 text-center mt-4 mb-2 align-self-center">
+                <!-- Card 1, exibido quando Card 2 ficar escondido "hide". Serve para exibir
+                os gestos reconhecimento através da webcam usando o modelo carregado ou treinado -->
+                <div class="card hide" id="detectedGestureIndicatorArea">
+                    <h5 class="card-title mt-2 fw-bold">Gesto reconhecido</h5>
+                    <div class="card-body mb-2">
+                        <!-- elemento que exibirá as imagens referentes as detecções -->
+                        <img src="./assets/images/palm-scanner.png" alt="gesture recognized" id="recognizedClassImage">
+                    </div>
+                </div>
+                <!-- Card 2, com os botões para inserir exemplos, treinar e salvar modelo -->
+                <div class="card hide" id="insertNewExamplesArea">
+                    <h5 class="card-title mt-4 mb-3 fw-bold">Inserir Exemplos para treinamento</h5>
+                    <div class="row justify-content-center">
+                        <!-- Cada botão abaixo possui um span que exibirá a quantidade de exemplos inseridos 
+                        para treinamento do modelo -->
+                        <div class="mt-3 col-md-12 text-center">
+                            <button class="btn btn-outline-dark mb-2 me-1" id="btAddExampleUp" type="button"><i
+                                    class="fa-solid fa-angles-up"></i>
+                                <span class="ms-2 fw-bold" id="numberExamplesUp">0</span>
+                            </button>
+                            <button class="btn btn-outline-dark mb-2 me-1" id="btAddExampleRight" type="button"><i
+                                    class="fa-solid fa-angles-right"></i>
+                                <span class="ms-2 fw-bold" id="numberExamplesRight">0</span>
+                            </button>
+                            <button class="btn btn-outline-dark mb-2 me-1" id="btAddExampleDown" type="button"><i
+                                    class="fa-solid fa-angles-down"></i>
+                                <span class="ms-2 fw-bold" id="numberExamplesDown">0</span>
+                            </button>
+                            <button class="btn btn-outline-dark mb-2 me-1" id="btAddExampleLeft" type="button"><i
+                                    class="fa-solid fa-angles-left"></i>
+                                <span class="ms-2 fw-bold" id="numberExamplesLeft">0</span>
+                            </button>
+                            <button class="btn btn-outline-dark mb-2 me-1" data-bs-toggle="tooltip"
+                                data-bs-placement="top" title="Exemplo que não corresponde à classe desejada"
+                                id="btAddExampleNegative" type="button"><i class="fa-solid fa-not-equal"></i>
+                                <span class="ms-2 fw-bold" id="numberExamplesNegative">0</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center mt-4 mb-3">
+                        <div class="col-md-10 text-center">
+                            <button class="btn btn-outline-primary mb-2 me-1 fw-bold" id="btSaveModel" type="button">
+                                <i class="fa-solid fa-download"></i> Baixar Modelo
+                            </button>
+                            <!-- para usar, necessário carregar model.json e model.weights.bin -->
+                            <input id='modelDataFile' type='file' hidden multiple />
+                            <button class="btn btn-outline-primary mb-2 me-1 fw-bold" id="btLoadModel" type="button">
+                                <i class="fa-solid fa-upload"></i> Carregar Modelo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Row para exibir mensagem de erro caso video não possa ser carregado -->
+        <div class="row justify-content-center mt-2">
+            <div class="col-md-3 hide text-center" id="errorVideoIndicatorArea"></div>
+        </div>
+        <!-- Área usada para exibição dos feedbacks da aplicação-->
+        <div class="row justify-content-center mt-3 mb-2">
+            <p class='text-center fw-bold hide' id="modelFeedbackIndicatorArea"></p>
+        </div>
+        <!-- Area com os botões para usar efetivamente o modelo -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-8 text-center">
+                <button class="btn btn-outline-success mb-2 me-1 fw-bold" id="btStartClassification" type="button">
+                    <i class="me-1 fa-solid fa-circle-play"></i> Iniciar Classificação
+                </button>
+                <button class="btn btn-outline-success mb-2 me-1 fw-bold" id="btStoplassification" type="button">
+                    <i class="me-1 fa-solid fa-circle-stop"></i> Parar Classificação
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

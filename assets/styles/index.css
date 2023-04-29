@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300&display=swap');
+
+body {
+    font-family: 'Quicksand', sans-serif;
+}
+
+/* Para deixar a webcam responsiva e ocupando todo o espaço da col */
+#webcam { 
+    width: 100%;
+    height: auto;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+/* classe usada para esconder alguns elementos dinamicamente de acordo com determinadas 
+funcionalidades da aplicação. */
+.hide {
+    display: none;
+}
+
+/* para colocar um aspecto sombreado nos cards ao lado da webcam */
+#detectedGestureIndicatorArea, #insertNewExamplesArea {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+}

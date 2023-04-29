@@ -1,0 +1,16 @@
+Camera
+<a href="https://www.flaticon.com/free-icons/no-video" title="no video icons">No video icons created by Vitaly Gorbachev - Flaticon</a>
+palm
+<a href="https://www.flaticon.com/free-icons/palm-scanner" title="palm scanner icons">Palm scanner icons created by Vectorslab - Flaticon</a>
+up
+<a href="https://www.flaticon.com/free-icons/arrow-up" title="arrow-up icons">Arrow-up icons created by lutfix - Flaticon</a>
+left
+<a href="https://www.flaticon.com/free-icons/arrow-left" title="arrow left icons">Arrow left icons created by lutfix - Flaticon</a>
+Right:
+<a href="https://www.flaticon.com/free-icons/next" title="next icons">Next icons created by lutfix - Flaticon</a>
+down:
+<a href="https://www.flaticon.com/free-icons/arrows" title="arrows icons">Arrows icons created by lutfix - Flaticon</a>
+Question mark = negative
+<a href="https://www.flaticon.com/free-icons/question-mark" title="question mark icons">Question mark icons created by riajulislam - Flaticon</a>
+Neural networl
+<a href="https://www.flaticon.com/free-icons/neural-network" title="neural network icons">Neural network icons created by Freepik - Flaticon</a>
