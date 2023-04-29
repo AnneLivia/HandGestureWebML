@@ -46,7 +46,7 @@
                     Reiniciar
                 </button>
             </div>
-            <div class="col-md-4 col-sm-9 text-center mt-4 mb-2 align-self-center">
+            <div class="col-md-5 col-sm-9 text-center mt-4 mb-2 align-self-center">
                 <!-- Card 1, exibido quando Card 2 ficar escondido "hide". Serve para exibir
                 os gestos reconhecimento através da webcam usando o modelo carregado ou treinado -->
                 <div class="card hide" id="detectedGestureIndicatorArea">
@@ -91,8 +91,8 @@
                             <button class="btn btn-outline-primary mb-2 me-1 fw-bold" id="btSaveModel" type="button">
                                 <i class="fa-solid fa-download"></i> Baixar Modelo
                             </button>
-                            <!-- para usar, necessário carregar model.json e model.weights.bin -->
-                            <input id='modelDataFile' type='file' hidden multiple />
+                            <!-- para usar, necessário carregar model.json -->
+                            <input id='modelDataFile' type='file' hidden />
                             <button class="btn btn-outline-primary mb-2 me-1 fw-bold" id="btLoadModel" type="button">
                                 <i class="fa-solid fa-upload"></i> Carregar Modelo
                             </button>

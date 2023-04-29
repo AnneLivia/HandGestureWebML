@@ -134,13 +134,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   const knnModelClassifier = ml5.KNNClassifier();
 
   // Primeiro passo de transfer learning é extrair features já aprendidas do MobileNet
-  const featureExtractor = ml5.featureExtractor(
-    'MobileNet',
-    () => {
-      console.log('Modelo carregado!');
-      mobileNetLoaded = true;
-    }
-  );
+  const featureExtractor = ml5.featureExtractor('MobileNet', () => {
+    console.log('Modelo carregado!');
+    mobileNetLoaded = true;
+  });
 
   const addNewTrainData = async (label) => {
     if (mobileNetLoaded) {
@@ -191,7 +188,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         addNewTrainData(btn.label);
       }, 100);
     });
-    
+
     btn.element.addEventListener('mouseout', () => {
       clearInterval(intervalAddExamples);
     });
@@ -211,28 +208,42 @@ document.addEventListener('DOMContentLoaded', async () => {
       return console.log(error.message);
     }
 
-    // controlando tecla
-    controlArrowKeysBasedOnALabel(result.label);
+    if (result.confidencesByLabel) {
+      // obtendo porcentagem da classificação
+      const confidences = result.confidencesByLabel;
 
-    // ao reconhecer alguma classe, colocar a imagem especifica
-    recognizedClassImage.src = `./assets/images/${result.label}.png`;
+      let labelName = result.label;
 
-    console.log(`Label: ${result.label} - ${result.confidence}`);
+      if (result.label >= "0" && result.label <= "4") {
+        // quando se carrega o modelo knn, as labels mudam de nome para index
+        // precisa transforma index para nomes.
+        labelName = knnModelClassifier.mapStringToIndex[result.label];
+      }
+     
+      if (confidences[labelName] >= 0.9) {
+        // ao reconhecer alguma classe, colocar a imagem especifica
+        recognizedClassImage.src = `./assets/images/${labelName}.png`;
 
+        console.log(`Label: ${labelName} - ${(confidences[labelName] * 100).toFixed(2)}%`);
+        // controlando tecla
+        controlArrowKeysBasedOnALabel(labelName);
+      }
+    }
     // se usuário não tiver apertado em parar classificação, continuar em loop
-    if (shouldClassify)
-      classifyGesture();
+    if (shouldClassify) classifyGesture();
   };
 
   const classifyGesture = () => {
-     // Get the features of the input video
-     const features = featureExtractor.infer(video);
-     return knnModelClassifier.classify(features, getLabelsReturnedFromModel);
-  }
+    // obtendo as caracteristicas dos frames para classificação
+    const features = featureExtractor.infer(video);
+    // 10 é a quantidade de labels
+    return knnModelClassifier.classify(features, 10, getLabelsReturnedFromModel);
+  };
 
   btStartClassification.addEventListener('click', () => {
     // getNumLabels, retorna o número total de labels adicionados no modelo
     const qtdLabels = knnModelClassifier.getNumLabels();
+
     // se modelo customizado existe ou usuário colocou algum outro modelo, deve-se iniciar classificiação
     if (qtdLabels > 0) {
       // iniciar jogo
@@ -274,33 +285,40 @@ document.addEventListener('DOMContentLoaded', async () => {
       'Adicione imagens de exemplos antes de salvar o modelo';
   });
 
-  // FIX ==========================================================
-  
   // botão que abri janela para inserção de arquivos do modelo
   btLoadModel.addEventListener('click', () => {
     modelDataFile.click();
   });
 
   // falta carregar modelo
-  modelDataFile.addEventListener('change', async (e) => {
-    if (knnModelClassifier) {
-      modelFeedbackIndicatorArea.classList.remove('hide');
-      try {
-        // passando os arquivos weights e model.json
-        await knnModelClassifier.load(e.target.files);
-        // informando que modelo foi carregado na interface
-        modelFeedbackIndicatorArea.innerText = 'Modelo carregado com sucesso';
-        // para permitir que o modelo carregado possa ser usado na classificação em loop quando
-        // usuario clicar em classificar
-        modelLoaded = true;
-      } catch (error) {
-        modelFeedbackIndicatorArea.innerText = 'Erro ao carregar o modelo';
-        console.log(error);
-      }
+  modelDataFile.addEventListener('change', (e) => {
+    modelFeedbackIndicatorArea.classList.remove('hide');
+    try {
+      // obtendo o arquivo
+      const selectedFile = e.target.files[0];
+      // criando uma url do arquivo selecionado
+      const objectURL = URL.createObjectURL(selectedFile);
+      // passando os arquivos weights e model.json
+      
+      knnModelClassifier.load(objectURL, () => {
+        const totalExamplesPerLabel = knnModelClassifier.getCountByLabel();
+
+        knnModelClassifier.mapStringToIndex.forEach((label) => {
+          // atualizando a quantidade de uma label especifica e exibindo na tela
+          totalExamplesAddedToTrain[label].innerText = totalExamplesPerLabel[label];
+        });
+      });
+    
+      // informando que modelo foi carregado na interface
+      modelFeedbackIndicatorArea.innerText = 'Modelo carregado com sucesso';
+      // para permitir que o modelo carregado possa ser usado na classificação em loop quando
+      // usuario clicar em classificar
+      modelLoaded = true;
+    } catch (error) {
+      modelFeedbackIndicatorArea.innerText = 'Erro ao carregar o modelo';
+      console.log(error);
     }
   });
-
-  // FIX ==========================================================
 
   // Os Códigos abaixo incluem hover effects em todos os botões
   const listOfButtonsElementsToAddHover = [
