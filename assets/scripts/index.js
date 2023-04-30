@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   );
 
   // botão para parar classificação
-  const btStoplassification = document.querySelector('#btStoplassification');
+  const btStopClassification = document.querySelector('#btStopClassification');
 
   // variavel para determinar se é para classificar (quando iniciar classificao for precionada) ou
   // parar classificação (quando botão correspondente a essa opção for acionado)
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // desabilitar botões de iniciar e parar classificação
       btStartClassification.disabled = true;
-      btStoplassification.disabled = true;
+      btStopClassification.disabled = true;
 
       console.error(error.message);
     }
@@ -264,9 +264,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       'Adicione imagens de exemplos antes de iniciar a classificação';
   });
 
-  btStoplassification.addEventListener('click', () => {
+  btStopClassification.addEventListener('click', () => {
     // parar jogo
-    videoArea.classList.remove('hide');
     gameArea.classList.add('hide');
     // esconde card de exibição de resultados e exibe card para efetuar treinamento
     detectedGestureIndicatorArea.classList.add('hide');
@@ -326,7 +325,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     btSaveModel,
     btLoadModel,
     btStartClassification,
-    btStoplassification,
+    btStopClassification,
     ...btElements,
   ];
 
