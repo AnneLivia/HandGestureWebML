@@ -1,7 +1,11 @@
 // Executar quando html tiver sido carregado
 document.addEventListener('DOMContentLoaded', async () => {
+  // hiperparametros da classificação
+  const MIN_THRESHOLD = 0.90;
+  const K_NEAREST_NEIGHBORS = 10;
+
   // criando novo jogo
-  const snakeGame = new SnakeGame(18, 18, 19, 100, {
+  const snakeGame = new SnakeGame(17, 24, 18, 230, {
     boardColor: '#ededed',
     snakeColor: '#573dff',
     foodColor: '#ff2626',
@@ -37,29 +41,29 @@ document.addEventListener('DOMContentLoaded', async () => {
   // para mostrar a imagem das classes detectadas
   const recognizedClassImage = document.querySelector('#recognizedClassImage');
 
-  // div de video para exibição da webcam
-  const video = document.querySelector('#webcam');
-
   // referencia para todos os botões de exemplos
-  const btUp = document.querySelector('#btAddExampleUp');
-  const btDown = document.querySelector('#btAddExampleDown');
-  const btLeft = document.querySelector('#btAddExampleLeft');
-  const btRight = document.querySelector('#btAddExampleRight');
-  const btNegative = document.querySelector('#btAddExampleNegative');
-
-  // botões para manipulação do modelo
-  const btSaveModel = document.querySelector('#btSaveModel');
-  const btLoadModel = document.querySelector('#btLoadModel');
-
-  // botões para iniciar classificação e parar caso haja modelo treinado ou carregado
-  const btStartClassification = document.querySelector(
-    '#btStartClassification'
-  );
-
-  const btStoplassification = document.querySelector('#btStoplassification');
-
-  // input referente a inserção dos arquivos do modelo baixado (model.json)
-  const modelDataFile = document.querySelector('#modelDataFile');
+  const btUsedToaddTrainData = [
+    {
+      element: document.querySelector('#btAddExampleDown'),
+      label: 'down',
+    },
+    {
+      element: document.querySelector('#btAddExampleLeft'),
+      label: 'left',
+    },
+    {
+      element: document.querySelector('#btAddExampleUp'),
+      label: 'up',
+    },
+    {
+      element: document.querySelector('#btAddExampleRight'),
+      label: 'right',
+    },
+    {
+      element: document.querySelector('#btAddExampleNegative'),
+      label: 'negative',
+    },
+  ];
 
   // para mostrar quantidade de exemplos inseridos
   // cada key possui a quantidade para concatenar na medida em que novos itens
@@ -72,15 +76,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     negative: document.querySelector('#numberExamplesNegative'),
   };
 
-  // variavel para determinar se é para classificar (quando iniciar classificao for precionada) ou
-  // parar classificação (quando botão correspondente a essa opção for acionado)
-  let shouldClassify = false;
-
-  // para permitir adicionar exemplo de classe, apenas quando o modelo MobileNet tiver sido carregado
-  let mobileNetLoaded = false;
-
-  // para precionar as arrow keys
-  const keys = {
+   // para precionar as arrow keys
+   const keys = {
     up: new KeyboardEvent('keydown', {
       key: 'ArrowUp',
     }),
@@ -96,6 +93,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     }),
   };
 
+  // botões para manipulação do modelo
+  const btSaveModel = document.querySelector('#btSaveModel');
+  const btLoadModel = document.querySelector('#btLoadModel');
+  // input referente a inserção dos arquivos do modelo baixado (model.json)
+  const modelDataFile = document.querySelector('#modelDataFile');
+
+  // botões para iniciar classificação e parar caso haja modelo treinado ou carregado
+  const btStartClassification = document.querySelector(
+    '#btStartClassification'
+  );
+
+  // botão para parar classificação
+  const btStoplassification = document.querySelector('#btStoplassification');
+
+  // variavel para determinar se é para classificar (quando iniciar classificao for precionada) ou
+  // parar classificação (quando botão correspondente a essa opção for acionado)
+  let shouldClassify = false;
+
+  // para permitir adicionar exemplo de classe, apenas quando o modelo MobileNet tiver sido carregado
+  let mobileNetLoaded = false;
+
+  // div de video para exibição da webcam
+  const video = document.querySelector('#webcam');
+
   // verificar se a webcam é suportada pelo browser
   if (navigator.mediaDevices.getUserMedia) {
     try {
@@ -109,11 +130,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       video.style.webkitTransform = 'scaleX(-1)';
       video.style.transform = 'scaleX(-1)';
 
+      // pre processamento de frames
       video.style.filter = 'contrast(200%)';
       video.style.filter = 'grayscale(100%)';
 
       video.play();
-      // exibindo video e card com indicação de gesto
+      // exibindo video e card para inserir exemplos
       video.classList.remove('hide');
       insertNewExamplesArea.classList.remove('hide');
     } catch (error) {
@@ -155,30 +177,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   };
 
-  const btUsedToaddTrainData = [
-    {
-      element: btDown,
-      label: 'down',
-    },
-    {
-      element: btLeft,
-      label: 'left',
-    },
-    {
-      element: btUp,
-      label: 'up',
-    },
-    {
-      element: btRight,
-      label: 'right',
-    },
-    {
-      element: btNegative,
-      label: 'negative',
-    },
-  ];
-
-  // inserindo os eventos de inserir imagem para cada label
+  // inserindo os eventos de inserir imagem para cada label (enquanto mouse estiver sobre botão,
+  // um novo exemplo será adicionado a cada 100 ms)
   btUsedToaddTrainData.forEach((btn) => {
     let intervalAddExamples = null;
 
@@ -214,13 +214,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       let labelName = result.label;
 
+      // quando se carrega o modelo knn, as labels mudam de nome para index
+      // precisa transforma index para nomes.
       if (result.label >= "0" && result.label <= "4") {
-        // quando se carrega o modelo knn, as labels mudam de nome para index
-        // precisa transforma index para nomes.
         labelName = knnModelClassifier.mapStringToIndex[result.label];
       }
      
-      if (confidences[labelName] >= 0.9) {
+      if (confidences[labelName] >= MIN_THRESHOLD) {
         // ao reconhecer alguma classe, colocar a imagem especifica
         recognizedClassImage.src = `./assets/images/${labelName}.png`;
 
@@ -237,7 +237,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // obtendo as caracteristicas dos frames para classificação
     const features = featureExtractor.infer(video);
     // 10 é a quantidade de labels
-    return knnModelClassifier.classify(features, 10, getLabelsReturnedFromModel);
+    return knnModelClassifier.classify(features, K_NEAREST_NEIGHBORS, getLabelsReturnedFromModel);
   };
 
   btStartClassification.addEventListener('click', () => {
@@ -247,16 +247,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     // se modelo customizado existe ou usuário colocou algum outro modelo, deve-se iniciar classificiação
     if (qtdLabels > 0) {
       // iniciar jogo
-      // videoArea.classList.add('hide');
       gameArea.classList.remove('hide');
-      snakeGame.startGame();
+      snakeGame.restartGame();
       // para ficar em loop a classificação
       shouldClassify = true;
       // para mostrar os resultados da classificação com imagens e esconder a área referente a inserção de exemplos
       detectedGestureIndicatorArea.classList.remove('hide');
       insertNewExamplesArea.classList.add('hide');
 
-      classifyGesture();
+      return classifyGesture();
     }
 
     // se chegou aqui é porque não existe modelo para ser usado.
@@ -298,8 +297,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const selectedFile = e.target.files[0];
       // criando uma url do arquivo selecionado
       const objectURL = URL.createObjectURL(selectedFile);
-      // passando os arquivos weights e model.json
-      
+      // passando o arquivo .json para classificador carregar
       knnModelClassifier.load(objectURL, () => {
         const totalExamplesPerLabel = knnModelClassifier.getCountByLabel();
 
@@ -320,17 +318,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+  // obtendo apenas os botões, para incluir hover
+  const btElements = btUsedToaddTrainData.map((btn) => btn.element);
+
   // Os Códigos abaixo incluem hover effects em todos os botões
   const listOfButtonsElementsToAddHover = [
     btSaveModel,
     btLoadModel,
     btStartClassification,
     btStoplassification,
-    btDown,
-    btLeft,
-    btUp,
-    btRight,
-    btNegative,
+    ...btElements,
   ];
 
   listOfButtonsElementsToAddHover.forEach((element) => {
