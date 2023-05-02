@@ -162,6 +162,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   const addNewTrainData = async (label) => {
+    console.log('Model and label (add Train data)', knnModelClassifier, label);
     if (mobileNetLoaded) {
       // Obtendo as caracteristicas através dos frames do vídeo (webcam)
       const features = featureExtractor.infer(video);
@@ -212,21 +213,23 @@ document.addEventListener('DOMContentLoaded', async () => {
       // obtendo porcentagem da classificação
       const confidences = result.confidencesByLabel;
 
-      let labelName = result.label;
+      // result.label pode retornar um indice ou o nome da classe errado (quando insere-se novos exemplos) 
+      // caso um modelo seja carregado, portanto, podemos pegar a label pelo confidenceByLabel
+      // no codigo abaixo usa-se object.entries para retornar uma matriz com os pares key-value do objeto
+      // find, vai obter o primeiro que satisfazer uma condição
+      // [0], refere-se apenas a label, [1] pega a confiança
+      const label = 
+        Object.entries(confidences)
+        .find(([, confidence]) => confidence >= MIN_THRESHOLD);
 
-      // quando se carrega o modelo knn, as labels mudam de nome para index
-      // precisa transforma index para nomes.
-      if (result.label >= "0" && result.label <= "4") {
-        labelName = knnModelClassifier.mapStringToIndex[result.label];
-      }
-     
-      if (confidences[labelName] >= MIN_THRESHOLD) {
+      // se alguma label for retornada
+      if (label) {
         // ao reconhecer alguma classe, colocar a imagem especifica
-        recognizedClassImage.src = `./assets/images/${labelName}.png`;
+        recognizedClassImage.src = `./assets/images/${label[0]}.png`;
 
-        console.log(`Label: ${labelName} - ${(confidences[labelName] * 100).toFixed(2)}%`);
+        console.log(`Label: ${label[0]} - ${(label[1] * 100).toFixed(2)}%`);
         // controlando tecla
-        controlArrowKeysBasedOnALabel(labelName);
+        controlArrowKeysBasedOnALabel(label[0]);
       }
     }
     // se usuário não tiver apertado em parar classificação, continuar em loop
