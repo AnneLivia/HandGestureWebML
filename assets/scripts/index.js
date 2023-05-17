@@ -1,19 +1,8 @@
 // Executar quando html tiver sido carregado
 document.addEventListener('DOMContentLoaded', async () => {
-  // hiperparametros da classificação
-  const MIN_THRESHOLD = 0.90;
-  const K_NEAREST_NEIGHBORS = 10;
 
-  // criando novo jogo
-  const snakeGame = new SnakeGame(17, 24, 18, 230, {
-    boardColor: '#ededed',
-    snakeColor: '#573dff',
-    foodColor: '#ff2626',
-  });
-
-  // divs para controlar exibição de jogo e exibição de video
+  // divs para controlar exibição de jogo
   const gameArea = document.querySelector('#gameArea');
-  const videoArea = document.querySelector('#videoArea');
 
   // botão para reiniciar jogo
   const btRestartGame = document.querySelector('#btRestartGame');
@@ -41,7 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // para mostrar a imagem das classes detectadas
   const recognizedClassImage = document.querySelector('#recognizedClassImage');
 
-  // referencia para todos os botões de exemplos
+  // referência para todos os botões de exemplos
   const btUsedToaddTrainData = [
     {
       element: document.querySelector('#btAddExampleDown'),
@@ -65,9 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     },
   ];
 
-  // para mostrar quantidade de exemplos inseridos
-  // cada key possui a quantidade para concatenar na medida em que novos itens
-  // são inseridos e o documento referente ao span para exibição do número na interface
+  // para mostrar quantidade de exemplos inseridos no span da interface
   const totalExamplesAddedToTrain = {
     up: document.querySelector('#numberExamplesUp'),
     left: document.querySelector('#numberExamplesLeft'),
@@ -76,8 +63,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     negative: document.querySelector('#numberExamplesNegative'),
   };
 
-   // para precionar as arrow keys
-   const keys = {
+  // botões para manipulação do modelo
+  const btSaveModel = document.querySelector('#btSaveModel');
+  const btLoadModel = document.querySelector('#btLoadModel');
+  // input referente a inserção dos arquivos do modelo baixado (model.json)
+  const modelDataFile = document.querySelector('#modelDataFile');
+
+  // botões para iniciar classificação caso exista dados para treinamento
+  const btStartClassification = document.querySelector(
+    '#btStartClassification'
+  );
+
+  // botão para parar a classificação
+  const btStopClassification = document.querySelector('#btStopClassification');
+
+  // div de video para exibição da webcam
+  const video = document.querySelector('#webcam');
+
+  // para precionar as arrow keys
+  const keys = {
     up: new KeyboardEvent('keydown', {
       key: 'ArrowUp',
     }),
@@ -93,29 +97,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     }),
   };
 
-  // botões para manipulação do modelo
-  const btSaveModel = document.querySelector('#btSaveModel');
-  const btLoadModel = document.querySelector('#btLoadModel');
-  // input referente a inserção dos arquivos do modelo baixado (model.json)
-  const modelDataFile = document.querySelector('#modelDataFile');
-
-  // botões para iniciar classificação e parar caso haja modelo treinado ou carregado
-  const btStartClassification = document.querySelector(
-    '#btStartClassification'
-  );
-
-  // botão para parar classificação
-  const btStopClassification = document.querySelector('#btStopClassification');
-
-  // variavel para determinar se é para classificar (quando iniciar classificao for precionada) ou
-  // parar classificação (quando botão correspondente a essa opção for acionado)
+  // variável usada para determinar se é para classificar ou
+  // parar a classificação (quando botão correspondente a essa opção for acionado)
   let shouldClassify = false;
 
   // para permitir adicionar exemplo de classe, apenas quando o modelo MobileNet tiver sido carregado
   let mobileNetLoaded = false;
 
-  // div de video para exibição da webcam
-  const video = document.querySelector('#webcam');
+  // criando novo jogo
+  const snakeGame = new SnakeGame(17, 24, 18, 230, {
+    boardColor: '#ededed',
+    snakeColor: '#573dff',
+    foodColor: '#ff2626',
+  });
 
   // verificar se a webcam é suportada pelo browser
   if (navigator.mediaDevices.getUserMedia) {
@@ -129,10 +123,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       // deixando a imagem espelhada, através de um flip na horizontal
       video.style.webkitTransform = 'scaleX(-1)';
       video.style.transform = 'scaleX(-1)';
-
-      // pre processamento de frames
-      video.style.filter = 'contrast(200%)';
-      video.style.filter = 'grayscale(100%)';
 
       video.play();
       // exibindo video e card para inserir exemplos
@@ -151,6 +141,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       console.error(error.message);
     }
   }
+
+  // hiperparametros da classificação
+  const MIN_THRESHOLD = 0.90;
+  const K_NEAREST_NEIGHBORS = 10;
 
   // criar o modelo de classificação com KNN
   const knnModelClassifier = ml5.KNNClassifier();
