@@ -155,8 +155,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     mobileNetLoaded = true;
   });
 
-  const addNewTrainData = async (label) => {
-    console.log('Model and label (add Train data)', knnModelClassifier, label);
+  const addNewTrainData = (label) => {
     if (mobileNetLoaded) {
       // Obtendo as caracteristicas através dos frames do vídeo (webcam)
       const features = featureExtractor.infer(video);
