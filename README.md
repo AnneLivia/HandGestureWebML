@@ -15,4 +15,23 @@ This repository highlights a project that employs the ML5.js library for image c
 ### Demo
 ![game demo](https://github.com/AnneLivia/HandGestureWebML/assets/31932673/7a78610f-eae2-4a76-aff7-cb8439f2f408)
 
+### Application Icons
+- <a href="https://www.flaticon.com/free-icons/no-video" title="no video icons">No video icons created by Vitaly Gorbachev - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/palm-scanner" title="palm scanner icons">Palm scanner icons created by Vectorslab - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/arrow-up" title="arrow-up icons">Arrow-up icons created by lutfix - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/arrow-left" title="arrow left icons">Arrow left icons created by lutfix - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/next" title="next icons">Next icons created by lutfix - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/arrows" title="arrows icons">Arrows icons created by lutfix - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/question-mark" title="question mark icons">Question mark icons created by riajulislam - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/neural-network" title="neural network icons">Neural network icons created by Freepik - Flaticon</a>
+
+### Youtube Video Presentation Icons
+- <a href="https://www.flaticon.com/free-icons/distance-learning" title="distance-learning icons">Distance-learning icons created by Freepik - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/stop-sign" title="stop sign icons">Stop sign icons created by WR Graphic Garage - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/hand-up" title="hand-up icons">Hand-up icons created by Freepik - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/machine-learning" title="machine-learning icons">Machine-learning icons created by Becris - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/arrow" title="arrow icons">Arrow icons created by Creative Stall Premium - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/deep-learning" title="deep-learning icons">Deep-learning icons created by Becris - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/action-game" title="action game icons">Action game icons created by Freepik - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/laptop" title="laptop icons">Laptop icons created by Roundicons - Flaticon</a>
 
