@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // hiperparametros da classificação
   const MIN_THRESHOLD = 0.90;
-  const K_NEAREST_NEIGHBORS = 10;
+  const K_NEAREST_NEIGHBORS = 11;
 
   // criar o modelo de classificação com KNN
   const knnModelClassifier = ml5.KNNClassifier();
@@ -279,7 +279,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       'Adicione imagens de exemplos antes de salvar o modelo';
   });
 
-  // botão que abri janela para inserção de arquivos do modelo
+  // botão que abre janela para inserção de arquivos do modelo
   btLoadModel.addEventListener('click', () => {
     modelDataFile.click();
   });
@@ -304,9 +304,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
       // informando que modelo foi carregado na interface
       modelFeedbackIndicatorArea.innerText = 'Modelo carregado com sucesso';
-      // para permitir que o modelo carregado possa ser usado na classificação em loop quando
-      // usuario clicar em classificar
-      modelLoaded = true;
+      
     } catch (error) {
       modelFeedbackIndicatorArea.innerText = 'Erro ao carregar o modelo';
       console.log(error);
